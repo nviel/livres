@@ -364,17 +364,19 @@ elle suffit à expliquer l’absence relative de bogues dans Linux.
 
 Et peut−être bien, après tout, que cela ne devrait pas être aussi surprenant. Il y a des années que
 les sociologues ont découvert que l’opinion moyenne d’un grand nombre d’observateurs (tous
-aussi experts, ou tous aussi ignorants) est d’un indicateur beaucoup plus fiable que l’opinion de
+aussi experts, ou tous aussi ignorants) est un indicateur beaucoup plus fiable que l’opinion de
 l’un des observateurs, choisi au hasard. Ils ont appelé ce phénomène l’"effet de (l’oracle de)
 Delphes". Il apparaît que Linus a fait la preuve que cela s’applique même au débogage d’un
 système d’exploitation — que l’effet de Delphes peut apprivoiser la complexité du développement
 même au niveau de complexité atteint par le noyau d’un système d’exploitation.
+
 Je dois à Jeff Dutky <dutky@wam.umd.edu> la remarque qu’on peut reformuler la Loi de Linus
 sous la forme "On peut paralléliser le débogage". Jeff fait remarquer que, même si le débogage
 requiert que les débogueurs communiquent avec un développeur chargé de la coordination, une
-réelle coordination entre débogueurs n’étant pas indispensable. Ainsi, le débogage n’est pas la
+réelle coordination entre débogueurs n’est pas indispensable. Ainsi, le débogage n’est pas la
 proie de cette augmentation quadratique de la complexité et des coûts d’organisation qui rend
 problématique l’ajout de nouveaux développeurs.
+
 En pratique, le monde Linux n’est quasiment pas affecté par la perte théorique d’efficacité qui
 découle du fait que plusieurs débogueurs travaillent sur la même chose au même moment. L’une
 des conséquences de la politique du "distribuez tôt, mettez à jour souvent" est de minimiser les
@@ -384,6 +386,7 @@ maintenance d’un programme largement utilisé est typiquement de 40 pour cent 
 coût de développement. De façon surprenante, ce coût dépend énormément du nombre
 d’utilisateurs. Un plus grand nombre d’utilisateurs trouve un plus grand nombre de bogues."
 (l’emphase est de mon fait).
+
 Plus d’utilisateurs trouvent plus de bogues parce que l’ajout de nouveaux utilisateurs introduit de
 nouvelles manières de pousser le programme dans ses derniers retranchements. Cet effet est
 amplifié quand les utilisateurs se trouvent être des co−développeurs. Chacun d’entre eux a une
@@ -391,26 +394,31 @@ approche personnelle de la traque des bogues, en utilisant une perception du pro
 d’analyse, un angle d’attaque qui lui sont propres. L’"effet de Delphes" semble précisément
 fonctionner grâce à cette variabilité. Dans le contexte spécifique du débogage, la diversité tend
 aussi à réduire la duplication des efforts.
+
 Ainsi, introduire de nouveaux bêta−testeurs ne va sans doute pas réduire la complexité du bogue
 le plus "profond" du point de vue du développeur, mais cela augmente la probabilité que la
 trousse à outils d’un bêta−testeur sera adaptée au problème de telle sorte que le bogue saute aux
 yeux de cette personne.
+
 Mais Linus assure ses arrières. Au cas où il y aurait des bogues sérieux, les versions du noyau
 Linux sont numérotées de telle sorte que des utilisateurs potentiels peuvent faire le choix
 d’utiliser la dernière version désignée comme étant "stable", ou de surfer à la pointe de la
 technique courant le risque que quelques bogues accompagnent les nouvelles fonctionnalités.
 Cette tactique n’est pas encore formellement imitée par la plupart des bidouilleurs Linux, mais
 c’est sans doute un tort; le fait d’avoir une alternative rend les deux choix séduisants.
-0.6 5. De la chenille au papillon
+
+## De la chenille au papillon
 Après avoir étudié le comportement de Linus et formulé une théorie expliquant les raisons de son
 succès, je décidai volontairement de mettre cette théorie en pratique sur mon nouveau projet
 (quoique bien moins complexe et bien moins ambitieux).
+
 Mais la première chose que je fis fut de réorganiser et de simplifier popclient en profondeur.
 L’implantation de Carl Harris était très correcte, mais elle trahissait cette complexité inutile qui
 caractérise de nombreux programmeurs C. Il pensait que le code primait sur les structures de
 données, qui le servaient. Le résultat était un code assez esthétique, mais une conception
 improvisée des structures de données, assez laides (en tout cas aux yeux d’un vieux baroudeur du
 Lisp comme moi).
+
 J’avais malgré tout autre chose en tête que simplement améliorer le code et les structures de
 données. Mon but était de transformer popclient en quelque chose que je comprenne entièrement.
 Ce n’est pas drôle de devoir corriger des bogues dans un programme que vous comprenez mal.
@@ -421,21 +429,26 @@ de méthodes (pour POP2, POP3, et IMAP). Cela, et les modifications antérieures
 principe général qu’il est bon pour les programmeurs de garder à l’esprit, en particulier dans des
 langages comme le C qui ne permettent pas de procéder à un typage dynamique de manière
 naturelle:
-9. Il vaut mieux avoir des structures de données intelligentes et un code stupide que le contraire.
+
+**9. Il vaut mieux avoir des structures de données intelligentes et un code stupide que le contraire.**
+
 Si on prend le chapitre 9 de Fred Brooks: "Montre−moi ton code, dissimule tes structures de
 données, je continuerai à être mystifié. Montre−moi tes structures de données et je n’aurai sans
 doute pas besoin de voir ton code, il me semblera évident."
 En fait, il parlait d’"organigrammes" et de "descriptions de données". Mais si on traduit cela en
 termes d’aujourd’hui, après trente ans d’évolution culturelle et technologique, cela revient
 pratiquement au même.
+
 C’est à ce moment (début septembre 1996, six semaines après avoir commencé) que j’ai
 commencé à penser à procéder à un changement de nom — après tout, il ne s’agissait plus là
 uniquement d’un client POP. Mais j’hésitai, puisque rien dans ma conception n’était vraiment
 neuf. Il fallait encore que mon programme développe une identité propre.
+
 Cela s’est produit de manière radicale quand fetchmail apprit à faire suivre le courrier rapporté
 sur le port SMTP. J’y viendrai bientôt. Il me faut d’abord signaler ceci: j’ai dit plus haut que
 j’avais décidé d’utiliser ce projet pour mettre en pratique ma théorie sur les raisons du succès de
 Linus Torvalds. Comment ai−je procédé, vous direz−vous ? Comme suit:
+
 1. J’ai distribué tôt et mis à jour souvent (au moins tous les dix jours; pendant les périodes de
 développement effréné, une fois par jour).
 2. J’ai agrandi ma liste de bêta−testeurs en y ajoutant tout ceux qui me contactaient et me
@@ -445,80 +458,100 @@ participer.
 4. Et j’ai écouté mes bêta−testeurs, en les sondant sur les choix de conception et en les
 caressant dans le sens du poil à chaque fois qu’ils m’envoyaient leur avis ou des
 corrections.
+
 Le résultat de ces mesures élémentaires ne se fit pas attendre. La plupart des développeurs
 tueraient père et mère pour avoir des notifications de bogues de la qualité de celles que je reçus
 dès le début du projet, et la plupart du temps, elles étaient accompagnées de bonnes solutions.
+
 J’ai reçu des critiques réfléchies, du courrier d’admirateurs, des suggestions intelligentes
 proposant de nouvelles fonctionnalités. Ce qui nous donne:
-10. Si vous traitez vos bêta−testeurs comme ce que vous avez de plus cher au monde, ils réagiront en
-devenant effectivement ce que vous avez de plus cher au monde.
+
+**10. Si vous traitez vos bêta−testeurs comme ce que vous avez de plus cher au monde, ils réagiront en
+devenant effectivement ce que vous avez de plus cher au monde.**
+
 Une mesure intéressante du succès de fetchmail est l’impressionnante taille de la liste bêta du
 projet, les amis de fetchmail. Au moment ou j’écris ces lignes, elle compte 249 membres et elle
 grandit de deux ou trois membres chaque semaine.
+
 En fait, alors que je relis maintenant ces lignes en mai 1997, la liste commence à diminuer (elle a
 atteint à son heure de gloire, la taille de 300 membres) pour une raison intéressante. Plusieurs
 personnes m’ont demandé de résilier leur inscription parce que fetchmail fonctionne si bien pour
 eux qu’ils n’éprouvent plus le besoin de suivre les discussions de la liste ! Cela fait sans doute
 partie du cycle de vie d’un projet dans le style bazar, lorsqu’il est parvenu a maturité.
-0.7 6. Et popclient devint fetchmail
+
+## Et popclient devint fetchmail
 Le projet prit un virage radical le jour où Harry Hochheiser m’envoya un premier jet de son code
 destiné à faire suivre le courrier sur le port SMTP de la machine faisant tourner le client. J’ai
 réalisé pratiquement tout de suite qu’une implantation fiable de cette fonctionnalité rendrait
 pratiquement obsolètes tous les autres modes de distribution du courrier.
+
 Cela faisait plusieurs semaines que je peaufinais fetchmail, pas à pas, tout en trouvant mon
 interface fonctionnelle mais un peu pataude — inélégante et truffée de trop nombreuses options
 exiguës qui sortaient de toutes parts. J’étais particulièrement turlupiné par les options proposant
 de déposer le courrier récupéré dans un fichier boîte aux lettres ou sur la sortie standard, sans
 trop savoir pourquoi.
+
 Je compris, quand l’idée de faire suivre le courrier sur le port SMTP traversa mon esprit, que
 popclient cherchait à trop en faire. Il avait été conçu pour jouer à la fois le rôle de la Poste (MTA,
 agent de transport du courrier) et du facteur (MDA, agent de distribution du courrier). En
 choisissant la solution SMTP, il n’aurait plus à s’occuper de tout ce qui est MDA et pourrait se
 concentrer sur le côté MTA, en passant le relais à d’autres programmes pour la distribution en
 local, tout comme sendmail le fait.
+
 Pourquoi s’encombrer de toute la complexité inhérente à la configuration d’un facteur, pourquoi
 verrouiller un fichier boîte aux lettres, y ajouter du courrier, alors que le port 25 nous tendait les
 bras de façon pratiquement assurée sur toute plate−forme proposant TCP/IP depuis toujours ?
 Surtout que choisir cette solution garantit au courrier récupéré sa ressemblance avec du courrier
 normalement envoyé par son véritable auteur via SMTP, et que c’est exactement ce que nous
 cherchions.
+
 Il y a plusieurs morales à cette histoire. Tout d’abord, l’idée de faire suivre le courrier vers le
 port SMTP fut le plus grand profit que je tirai de la tentative consciente de copier les méthodes
 de Linus. C’est un utilisateur qui m’a soufflé cette idée formidable — et je n’ai eu qu’à en
 comprendre les conséquences.
-11. Il est presque aussi important de savoir reconnaître les bonnes idées de vos utilisateurs que
-d’avoir de bonnes idées vous−même. C’est même préférable, parfois.
+
+**11. Il est presque aussi important de savoir reconnaître les bonnes idées de vos utilisateurs que
+d’avoir de bonnes idées vous−même. C’est même préférable, parfois.**
+
 De manière surprenante, vous comprendrez vite que si vous êtes parfaitement honnête quant à ce
 que vous devez aux autres, tout en restant en retrait, on finira par considérer que c’est vous qui
 avez tout écrit tout seul et que vous restez modeste par humilité. On sait tous comment cela a bien
 fonctionné pour Linus !
+
 (Quand j’ai présenté cet article à la conférence sur Perl en août 1997, Larry Wall, l’inventeur de
 Perl, était assis au premier rang. Alors que j’abordai le paragraphe précédent il cria, d’un ton
 enthousiaste et fervent:
-NdT Larry se moquait gentiment de lui−même; il fréquente des groupes chrétiens qui font des réunions assez
-pittoresques.
-"Oui, dis−le leur, mon frère !", déclenchant un rire généralisé. Tout le monde dans l’assistance
+"Oui, dis-le, dis−le leur, mon frère !", déclenchant un rire généralisé. Tout le monde dans l’assistance
 savait comment cela avait bien fonctionné pour l’inventeur de Perl, également.)
+> **NdT** Larry se moquait gentiment de lui−même; il fréquente des groupes chrétiens qui font des réunions assez
+> pittoresques.
+
 Après quelques semaines de travail sur le projet dans cet esprit−là, je commençai à être félicité
 par des gens qui n’étaient pas mes utilisateurs, mais qui avaient entendu parler du projet. J’ai
 archivé certains de ces courriers; je les consulterai de nouveau si un jour je me demande avec
 angoisse si ma vie a été utile à quelque chose :−).
+
 Mais on doit retenir deux autres leçons essentielles, apolitiques, valables pour toutes sortes de
 conceptions de procédés nouveaux.
-12. Bien souvent, les solutions les plus innovantes, les plus frappantes, apparaissent lorsque vous
-réalisez que votre approche du problème était mauvaise.
+
+**12. Bien souvent, les solutions les plus innovantes, les plus frappantes, apparaissent lorsque vous
+réalisez que votre approche du problème était mauvaise.**
+
 J’avais tenté de résoudre le mauvais problème en m’acharnant à développer popclient comme un
 MTA/MDA combinés, m’encombrant d’un tas de modes de distribution exotiques en local. Il
 fallait repenser la conception de fetchmail du tout au tout, se contenter d’en faire un MTA, un
 maillon de la chaîne du courrier géré par SMTP sur l’Internet.
+
 Quand vous vous heurtez à un mur au cours du développement d’un projet — quand vous avez
 du mal à réfléchir au−delà de la prochaine génération de corrections — c’est souvent le bon
 moment pour vous demander, non pas si vous apportez la bonne réponse, mais plutôt si vous
 posez la bonne question. Il se peut qu’il faille recadrer le problème.
+
 Je le recadrai. Clairement, il me fallait maintenant (1) bidouiller pour ajouter la possibilité de
 faire suivre le courrier vers le port SMTP dans le pilote générique, (2) en faire le mode par
 défaut, et (3), finalement, abandonner tous les autres modes de livraison, en particulier les options
 de livraison dans un fichier ou sur la sortie standard.
+
 J’ai eu des scrupules à franchir la troisième étape pendant un moment, craignant le courroux de
 mes utilisateurs fidèles, utilisant les autres modes de distribution. En théorie, il leur suffisait de
 mettre en place des fichiers .forward ou leur équivalent dans un autre système que sendmail pour
@@ -527,45 +560,53 @@ Mais quand je le fis, finalement, les avantages furent énormes. Les parties les
 du code propre au pilote disparurent. La configuration devenait simplissime — plus de baratin
 sur la manière de gérer le MDA et la boîte aux lettres de l’utilisateur, plus d’ennuis quant à
 savoir si le système d’exploitation sous−jacent permettait de verrouiller des fichiers.
+
 Il faut également noter que l’unique manière de perdre son courrier disparut par la même
 occasion. Si vous demandiez la distribution du courrier vers un fichier et que le disque était plein,
 votre courrier était perdu. Cela ne peut pas se produire en faisant suivre le courrier vers le port
 SMTP, parce que la machine distante ne vous dira pas que tout va bien si elle ne peut
 effectivement distribuer le message, ou tout du moins le mettre de côté pour plus tard.
+
 De plus, les performances de mon programme s’en trouvaient améliorées (mais pas au point de le
 remarquer au cours d’une seule session). Un autre bénéfice non négligeable de ce changement de
 cap fut la simplification drastique de la documentation (la page de man).
 Plus tard, il me fallut revenir à un mode de distribution (MDA) en local spécifié par l’utilisateur,
 de manière à me permettre de gérer certaines situations obscures liées au SLIP dynamique. Mais
 j’ai trouvé une façon de faire bien plus simple.
+
 La morale ? N’hésitez pas à jeter aux orties des fonctionnalités dépassées quand vous le pouvez
 sans perdre en efficacité. Antoine de Saint−Exupéry (qui, lorsqu’il n’écrivait pas des classiques
 pour enfants, pilotait et construisait des avions), a dit:
-13. "La perfection est atteinte non quand il ne reste rien à ajouter, mais quand il ne reste rien à
-enlever."
+
+**13. "Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus rien à retrancher."**
+
 C’est quand votre code devient meilleur et plus simple, que vous savez qu’il est bon. Et au
 passage, la conception de fetchmail développa sa propre identité, différente de son ancêtre
 popclient.
+
 Le temps était venu pour un changement de nom. La nouvelle conception du nouveau
 programme ressemblait beaucoup plus à une réplique de sendmail qu’à l’ancien popclient; tous
 deux sont des MTAs, mais alors que sendmail envoie puis distribue, le nouveau popclient
 récupère avant de distribuer. Deux mois après le démarrage du projet, j’en changeai le nom en
 fetchmail.
-0.8 7. Fetchmail grandit
+
+## Fetchmail grandit
 Me voici donc avec une conception propre et novatrice, un code dont je savais qu’il fonctionnait
 bien puisque je l’utilisais tous les jours, et une liste bêta bourgeonnante. Je me rendis peu à peu
 compte que je n’étais plus engagé dans une bidouille personnelle et triviale que d’autres
 pourraient éventuellement trouver utile. J’étais le responsable d’un programme réellement utile à
 tout bidouilleur possédant une babasse sous Unix et une connexion par SLIP/PPP.
+
 Quand j’y eus injecté la fonctionnalité de SMTP, il surpassa tellement ses concurrents qu’il se
 mua en un "programme de référence", un de ces programmes classiques qui remplissent si bien
-leur rôle qu’il élimine toute compétition parce qu’on en oublie complètement les autres solutions,
-au lieu de simplement les laisser de côté.
+leur rôle que leur concurrents ne sont pas simplement abandonnés mais pratiquement oubliés.
+
 Je ne pense pas qu’on puisse vraiment viser ou planifier un tel but. On y est attiré par des idées
 de conception si puissantes qu’après coup les résultats paraissent tout naturels, inévitables,
 prédestinés. La seule manière de tomber sur ce genre d’idées est d’avoir beaucoup d’idées — ou
 d’avoir assez de discernement pour reconnaître les bonnes idées des autres, même si elles vous
 mènent plus loin que vous ne pensiez aller.
+
 Andrew Tanenbaum eut l’idée originale de construire un Unix simple en natif pour le 386, afin de
 l’utiliser comme outil pour l’enseignement. Linus Torvalds a poussé le concept de Minix bien plus
 loin sans doute que ce qu’Andrew avait en tête — et il le transforma en quelque chose de
@@ -574,12 +615,14 @@ Harris et de Harry Hochheiser et je les avais exploitées à fond. Aucun de nous
 la manière, romantique, dont les gens imaginent le génie. Mais la majeure partie des sciences, de
 l’ingéniérie et du développement logiciel n’est pas le fruit du génie à l’état pur, malgré ce que
 peuvent laisser croire les mythes des bidouilleurs.
+
 Les résultats furent à peu près une excitation identique — en fait, le genre de choses dont tous les
 bidouilleurs rêvent ! Et ils signifiaient simplement qu’il me faudrait être encore plus exigeant
 avec moi−même. Pour rendre fetchmail aussi bon que j’entrevoyais qu’il pouvait l’être, il ne
 faudrait plus me contenter d’écrire du code répondant à mes propres besoins, il me faudrait
 prendre en compte les désirs et les souhaits des autres pour des fonctionnalités que je n’utiliserais
 pas. Tout en gardant le programme simple et robuste.
+
 Le premier ajout que j’écrivis après cela, et il fut de taille, fut la possibilité de distribuer du
 courrier dans des ’immeubles’ (multidrop) — récupérer du courrier à partir d’une boîte aux
 lettres correspondant à une adresse commune, dans laquelle s’étaient accumulés des plis, et
@@ -588,56 +631,71 @@ J’ai en partie accepté d’ajouter le multidrop parce qu’on me le réclamai
 surtout parce que je pensais qu’il m’aiderait à traquer les bogues subsistant dans le code ’single−
 drop’ (mono−destinataire) en me forçant à gérer les adresses dans toute leur généralité. C’est ce
 qui s’est passé. Il me fallut extrêmement longtemps pour gérer la syntaxe du RFC 822
-NdT les RFC sont des protocoles décidés en commun sur Internet. Ce sont les initiales de Request For
-Comments, littéralement "(nous) réclamons des commentaires (sur ce qui suit)".
-, non qu’il contienne des choses extrêmement compliquées, mais que dans son ensemble il fait
-intervenir un enchevêtrement de détails un peu tordus.
+, non que chaque élément qu’elle contient soit compliqué, mais elle met en jeu une foulle de détails enchevêtrés et pointus.
+
+> **NdT** les RFC sont des protocoles décidés en commun sur Internet. Ce sont les initiales de Request For
+> Comments, littéralement "(nous) réclamons des commentaires (sur ce qui suit)".
+
 Mais l’adressage multidrop s’avéra également être une excellente décision de conception. Voici
 comment je m’en rendis compte:
-14. Tout outil doit être utile par rapport aux utilisations qu’il a été prévu d’en faire. Mais on
-reconnaît un outil vraiment excellent au fait qu’il se prête à des usages totalement insoupçonnés.
+
+**14. Tout outil devrait être utile aux usages attendus. Mais on
+reconnaît un outil vraiment excellent au fait qu’il se prête à des usages qu'on avait pas imaginé.**
+
 L’utilisation inattendue d’un fetchmail multi−destinataires est la gestion de listes de courrier
 électronique où la liste est conservée et où le développement des alias est fait du côté client de la
 connexion SLIP/PPP. Cela signifie qu’on peut modérer une liste de courrier électronique à partir
 d’une machine personnelle, via un compte chez un fournisseur de services pour Internet
-NdT ISP, parfois FAI
 sans devoir accéder sans cesse aux fichiers d’alias du fournisseur.
+
+> **NdT** ISP, parfois FAI
+
 Une autre amélioration importante exigée par mes bêta−testeurs, fut la possibilité d’utiliser le
 format MIME en 8 bits. Cela fut assez simple à faire, parce que j’avais pris soin de laisser mon
 code compatible 8 bits. Non que je prévoyais ce souhait des utilisateurs, mais plutôt en accord
 avec une autre règle:
-15. Quand vous écrivez un logiciel jouant le rôle d’une passerelle quelconque, prenez soin de
-perturber le moins possible le flot de données — et ne perdez *jamais* d’éléments d’information, à
-moins que la machine destinataire vous y oblige !
+
+**15. Quand vous écrivez un logiciel jouant le rôle d’une passerelle quelconque, prenez soin de
+perturber le moins possible le flot de données — et ne perdez *JAMAIS* d’éléments d’information, à
+moins que la machine destinataire vous y oblige !**
+
 Si je n’avais pas obéi à cette règle, le support du MIME en 8 bits aurait été difficile à implanter et
 instable. En l’état, il me suffit de lire le RFC 1652 et d’ajouter un petit peu de logique triviale
 pour la génération des en−têtes.
+
 Quelques utilisateurs européens m’ont ennuyé jusqu’à ce que j’ajoute une option pour limiter le
 nombre de messages transférés à chaque session (pour qu’ils puissent contrôler le prix de la
 communication téléphonique, sur leur onéreux réseau). J’ai mis du temps à m’y résoudre, et
 aujourd’hui encore je n’en suis pas très content. Mais quand vous êtes au service du monde
 entier, il vous faut écouter vos consommateurs — le fait qu’ils ne vous paient pas en monnaie
 sonnante et trébuchante ne change rien à l’affaire.
-0.9 8. Quelques enseignements supplémentaires tirés de fetchmail
+
+## Quelques enseignements supplémentaires tirés de fetchmail
 Avant de retourner à des sujets plus généraux du génie logiciel, il nous reste à méditer sur
-quelques leçons supplémentaires tirées de l’expérience de fetchmail.
+quelques leçons supplémentaires tirées de l’expérience de fetchmail. Le lecteur non technicien 
+peu sauter cette section sans problème.
+
 La syntaxe du fichier rc spécifie quelques mots clés "parasites" optionnels, complètement ignorés
 par l’analyseur syntaxique. Ils permettent l’utilisation d’une syntaxe proche de la langue
 anglaise, nettement plus lisible que les traditionnels, et spartiates, couples mot clé−valeur qu’on
 peut lire quand on ne garde que l’indispensable.
+
 L’idée m’est venue tard un soir, alors que je remarquais combien ces déclarations du fichier rc
 commençaient à prendre l’allure d’un mini−langage impératif. (C’est aussi la raison pour
 laquelle j’ai remplacé le mot clé ‘server’ (serveur), originalement présent dans popclient, par
 ‘poll’ (vérification de la présence d’activité)).
+
 Il m’a semblé que rendre ce mini−langage plus proche de l’anglais en rendrait l’utilisation plus
 aisée. Il me faut préciser que, bien que farouche partisan de l’école de conception "faites−en un
 langage", illustrée par des outils comme Emacs, HTML et de nombreux moteurs de bases de
 données, je ne suis pas, d’habitude, un admirateur des syntaxes "à l’anglaise".
+
 De manière traditionnelle, les programmeurs ont eu tendance à favoriser des syntaxes de contrôle
 très précises et compactes, sans redondance. Il s’agit d’un héritage culturel du temps où les
 ressources informatiques coûtaient cher, et où il fallait donc rendre les étapes d’analyse
 syntaxique aussi courtes et simples que possible. La langue anglaise, pour moitié redondante,
 semblait alors un modèle très peu approprié.
+
 Ce n’est pas la raison pour laquelle je dénonce la non utilisation de syntaxes naturelles; je n’en
 fais mention ici que pour mieux la démolir. Maintenant que les ressources informatiques sont
 pléthore, l’austérité ne doit pas être une fin en soi. De nos jours, il est plus important qu’un
@@ -655,95 +713,118 @@ langage est très restreint. Il n’est en rien un langage généraliste; il se 
 simples, de telle sorte qu’il est difficile de se tromper en transposant mentalement un minuscule
 sous−ensemble de l’anglais au langage de contrôle en lui−même. Je pense qu’il y a ici matière à
 une leçon plus générale:
-16. Quand votre langage est loin d’être Turing équivalent
-NdT c’est le cas par exemple des langages de programmation
-, un peu de "sucre syntaxique" ne peut qu’aider.
+
+**16. Quand votre langage est loin d’être Turing équivalent, un peu de "sucre syntaxique" ne peut qu’aider.**
+
+> **NdT** c’est le cas par exemple des langages de programmation
+
 Une autre leçon concerne la sécurité par hermétisme (utilisant par exemple des mots de passes
 secrets). Certains utilisateurs de fetchmail m’ont demandé de modifier le logiciel de manière à
 stocker des mots de passe chiffrés dans le fichier rc, de telle sorte que les petits malins ne puissent
 les lire directement.
+
 Je ne l’ai pas fait, parce que cela n’apporte aucune protection supplémentaire. Quiconque a
 obtenu le droit de lire votre fichier rc pourra lancer fetchmail sous votre identité de toutes
 manières — et s’il en a après votre mot de passe, il pourra toujours extraire du code de fetchmail
 le décodeur nécessaire pour le déchiffrer.
+
 Tout ce qu’un chiffrement de mots de passe dans le fichier .fetchmailrc aurait apporté, c’est un
 sentiment de sécurité infondé à ceux qui connaissent mal les problèmes de sécurité. La règle
 générale est ici:
-17. Un système de sécurité n’est pas plus sûr que le secret (la clé) qui le garde. Gare aux pseudo
-secrets !
-0.10 9. Prérequis nécessaires au style bazar
+
+**17. Un système de sécurité n’est pas plus sûr que le secret (la clé) qui le garde. Gare aux pseudo
+secrets !**
+
+## Prérequis nécessaires au style bazar
 Les premiers relecteurs et les premiers publics auprès desquels cet article a été testé ont posé de
 manière régulière la question des prérequis nécessaires à la réussite d’un développement dans le
 style bazar, en incluant dans cette question aussi bien les qualifications du chef de projet que
 l’état du code au moment où il est rendu public et tente de rallier autour de lui une communauté
 de co−développeurs.
+
 Il est assez évident qu’il n’est pas possible de commencer à coder dans le style bazar dès le début.
 On peut tester, déboguer et améliorer un programme dans le style bazar, mais il sera très difficile
 de faire démarrer un projet dans le mode bazar. Linus ne l’a pas tenté, moi non plus. Il faut que
 votre communauté naissante de développeurs ait quelque chose qui tourne, qu’on puisse tester,
 avec quoi elle puisse jouer.
+
 Quand vous initiez un travail de développement en communauté, il vous faut être capable de
 présenter une promesse plausible. Votre programme ne doit pas nécessairement fonctionner très
 bien. Il peut être grossier, bogué, incomplet, et mal documenté. Mais il ne doit pas manquer de
 convaincre des co−développeurs potentiels qu’il peut évoluer en quelque chose de vraiment bien
 dans un futur pas trop lointain.
+
 Linux et fetchmail furent tous deux rendus publics avec des conceptions simples, fortes et
 séduisantes. Nombreux sont ceux qui, après avoir réfléchi au modèle du bazar tel que je l’ai
 présenté ici, ont très correctement considéré que cela était critique, et en ont rapidement conclu
 qu’il était indispensable que le chef de projet fasse preuve au plus haut point d’astuce et
 d’intuition dans la conception.
+
 Mais Linus se fonda sur la conception d’Unix. Ma conception provenait initialement du vieux
 programme popclient (bien que beaucoup de choses aient changé à terme, proportionnellement
 bien plus que dans Linux). Alors faut−il que le chef/coordinateur d’un effort commun mené dans
 le style bazar ait un talent exceptionnel pour la conception, ou peut−il se contenter d’exalter le
 talent des autres ?
+
 Je pense qu’il n’est pas critique que le coordinateur soit capable de produire des conceptions
 exceptionnellement brillantes. En revanche, il est absolument critique que le coordinateur soit
 capable de reconnaître les bonnes idées de conception des autres.
+
 Les projets Linux et fetchmail en sont tous deux la preuve. Linus, bien qu’il ne soit pas (comme
 nous l’avons vu précédemment) un concepteur spectaculairement original, a démontré une
 puissante capacité à reconnaître une bonne conception et à l’intégrer au noyau Linux. Et j’ai déjà
 décrit comment l’idée la plus puissante dans la conception de fetchmail (faire suivre le courrier
 vers le port SMTP) me fut soufflée par quelqu’un d’autre.
+
 Les premières personnes auxquelles j’ai présenté cet article m’ont complimenté en me suggérant
-que je suis prompt à sous−évaluer dans la conception des projets menés dans le style bazar, leur
-originalité — principalement parce que j’en suis pas mal pourvu moi−même, ce qui me conduit à
+que je suis prompt à sous−évaluer l'originalité de la conception des projets menés dans le style bazar 
+parce que j'y suis coutumier moi−même, ce qui me conduit à
 considérer cela comme acquis. Il peut y avoir un fond de vérité là dedans; la conception (à
 l’opposé de la programmation ou du débogage) est certainement mon point fort.
+
 Mais le problème avec l’intelligence et l’originalité dans la conception de logiciels, c’est que ça
 devient une habitude — presque par réflexe, vous commencez à faire dans l’esthétique et le
 compliqué alors qu’il faudrait rester simple et robuste. Certains de mes projets n’ont jamais
 abouti à cause de cette erreur, mais ce ne fut pas le cas pour fetchmail.
+
 Aussi suis−je convaincu que le projet fetchmail a réussi en partie parce que j’ai refoulé ma
 tendance à donner dans la subtilité; cela contredit (au moins) l’idée que l’originalité dans la
 conception est essentielle dans des projets réussis menés dans le style bazar. Et pensez à Linux.
 Imaginez que Linus ait tenté de mettre en pratique des innovations fondamentales dans la
 conception de systèmes d’exploitation au cours du développement; est−il probable que le noyau
 qui en résulterait soit aussi stable et populaire que celui que nous connaissons ?
+
 Il faut, bien sûr, une certaine habileté dans la conception et le codage, mais je pense que
-quiconque envisage sérieusement de lancer un projet dans le style en possède déjà le minimum
-nécessaire. Les lois du marché de la réputation interne au monde du logiciel dont le code source
-est ouvert exercent des pressions subtiles décourageant ceux qui pensent mettre à contribution
+quiconque envisage sérieusement de lancer un projet dans ce style en possède déjà le minimum
+nécessaire. Les lois du marché de la réputation interne au monde du logiciel au source
+ ouvert exercent des pressions subtiles décourageant ceux qui pensent mettre à contribution
 d’autres développeurs alors qu’ils n’ont pas eux−mêmes la compétence d’assurer le suivi. Jusqu’à
 présent tout cela semble avoir très bien marché.
+
 Il existe une autre qualité qui n’est pas normalement associée au développement logiciel, mais je
 pense qu’elle est aussi importante qu’une bonne intelligence de la conception pour les projets de
 style bazar — et elle est peut−être bien plus importante. Le chef, ou coordinateur, d’un projet
 dans le style bazar doit être bon en relations humaines et avoir un bon contact.
+
 Cela devrait être évident. Pour construire une communauté de développement, il vous faut
 séduire les gens, les intéresser à ce que vous faites, et les encourager pour les petits bout du travail
 qu’ils réalisent. De bonnes compétences techniques sont essentielles, mais elles sont loin de suffire.
 La personnalité que vous projetez compte aussi.
+
 Cela n’est pas une coïncidence que Linus soit un chic type qu’on apprécie volontiers et qu’on a
 envie d’aider. Cela n’est pas fortuit non plus que je sois un extraverti énergique qui aime animer
 les foules et qui se comporte et réagit comme un comique de théâtre. Pour que le modèle du bazar
 fonctionne, une petite touche de charme et de charisme aide énormément.
-0.11 10. Le contexte social du logiciel dont le code source est ouvert
+
+## Le contexte social du logiciel open source (dont le code source est ouvert)
+
 Cela est bien connu: les meilleures bidouilles commencent en tant que solutions personnelles aux
-problèmes de tous les jours rencontrés par leur auteur, et elles se répandent parce que ce
+problèmes de tous les jours rencontrés par leurs auteur, et elles se répandent parce que ce
 problème est commun à de nombreuses personnes. Cela nous ramène à la règle numéro 1,
 reformulée de manière peut−être plus utile:
-18. Pour résoudre un problème intéressant, commencez par trouver un problème qui vous intéresse.
+
+**18. Pour résoudre un problème intéressant, commencez par trouver un problème qui vous intéresse.**
+
 Ainsi fut−il de Carl Harris et du vieux popclient, ainsi fut−il de moi et de fetchmail. Mais cela est
 bien compris depuis longtemps. Ce qui compte, le détail sur lequel les histoires de Linux et de
 fetchmail semblent nous demander de nous concentrer, est l’étape suivante — l’évolution du
@@ -752,18 +833,21 @@ Dans "Le mythe du mois−homme", Fred Brooks observa qu’on ne peut pas diviser
 temps du programmeur; si un projet a du retard, lui ajouter des développeurs ne fera
 qu’accroître son retard. Il explique que les coûts de communication et de complexité d’un projet
 augmentent de manière quadratique avec le nombre de développeurs, alors que le travail réalisé
-n’augmente que linéairement. Depuis, cela est connu sous le nom de "loi de Brooks", et on la
+n’augmente que linéairement. Depuis, cette réflexion est connue sous le nom de "loi de Brooks", et on la
 considère en général comme un truisme. Mais si seule la loi de Brooks comptait, Linux serait
 impossible.
+
 Le classique de Gerald Weinberg "La psychologie de la programmation sur ordinateur" apporta
 ce qu’on pourrait considérer après coup comme une correction vitale à Brooks. Dans sa
 discussion sur la "programmation non égoïste", Weinberg observa que dans les boîtes où les
 programmeurs ne marquent pas le territoire de leur code, et encouragent les autres à y chercher
 les bogues et les améliorations potentielles, les améliorations sont drastiquement plus rapides
 qu’ailleurs.
+
 Les termes choisis par Weinberg l’ont peut−être empêché de recevoir toute la considération qu’il
 méritait — et l’idée que les bidouilleurs sur Internet puissent être décrits comme "non égoïstes"
 fait sourire. Mais je pense que cet argument semble aujourd’hui plus vrai que jamais.
+
 L’histoire d’Unix aurait dû nous préparer à ce que nous découvrons avec Linux (et à ce que j’ai
 expérimenté à une échelle plus modeste en copiant délibérément les méthodes de Linus): alors
 que l’acte de programmation est essentiellement solitaire, les plus grandes bidouilles proviennent
@@ -771,39 +855,46 @@ de la mise à contribution de l’attention et de la puissance de réflexion de 
 Le développeur qui n’utilise que son propre cerveau dans un projet fermé ne tiendra pas la route
 face au développeur qui sait comment créer un contexte ouvert, susceptible d’évoluer, dans lequel
 la traque des bogues et les améliorations sont effectuées par des centaines de gens.
+
 Mais le monde traditionnel d’Unix n’a pas poussé cette approche dans ses derniers
 retranchements pour plusieurs raisons. L’un d’entre eux concernait les contraintes légales des
 diverses licences, secrets de fabrication, et autres intérêts commerciaux. Un autre (mieux compris
 plus tard) était que l’Internet n’était pas encore assez mûr.
+
 Avant que les coûts d’accès à Internet ne chutent, il existait quelques communautés
 géographiquement compactes dont la culture encourageait la programmation "non égoïste" à la
 Weinberg, et un développeur pouvait facilement attirer tout un tas de co−développeurs et autres
 touche−à−tout doués. Les laboratoires Bell, le laboratoire d’intelligence artificielle de l’institut de
 technologie du Massachusetts (MIT), l’université de Californie à Berkeley, devinrent les foyers
 d’innovations légendaires qui sont restés puissants.
+
 Linux fut le premier projet qui fit un effort conscient et abouti pour utiliser le monde entier
 comme réservoir de talent. Je ne pense pas que cela soit une coïncidence que la période de
 gestation de Linux ait coïncidé avec la naissance du World Wide Web, ni que Linux ait quitté le
 stade de la petite enfance en 1993−1994, au moment où l’intérêt général accordé à Internet et que
 l’industrie des fournisseurs d’accès explosèrent. Linus fut le premier à comprendre comment
 jouer selon les nouvelles règles qu’un Internet omniprésent rendait possibles.
+
 Même s’il fallait qu’Internet ne coûte pas cher pour que le modèle Linux se développe, je ne
 pense pas que cela soit suffisant. Il y avait un autre facteur vital: le développement d’un style de
 direction de projet et d’un ensemble de coutumes de coopération qui permettaient aux
 développeurs d’attirer des co−développeurs et de rentabiliser au maximum ce nouveau média.
+
 Quel est donc ce style de direction, quelles sont donc ces coutumes ? Ils ne peuvent pas être fondés
 sur des rapports de force — même si c’était le cas, la direction par coercition ne produirait pas
 les résultats qu’on peut observer. Weinberg cite fort à propos l’autobiographie de Pyotr
 Alexeyvitch Kropotkine, anarchiste russe du XIXe siècle, "Mémoires d’un révolutionnaire":
-"Élevé dans une famille possédant des serfs, j’entrai dans la vie active, comme tous les jeunes
-gens de mon époque, avec une confiance aveugle dans la nécessité de commander, d’ordonner, de
-brimer, de punir et ainsi de suite. Mais quand, assez tôt, je dus diriger d’importantes affaires et
-côtoyer des hommes libres, et quand chaque erreur pouvait être immédiatement lourde de
-conséquences, je commençai à apprécier la différence entre agir selon les principes du
-commandement et de la discipline et agir selon le principe de la bonne intelligence. Le premier
-fonctionne admirablement dans un défilé militaire, mais ne vaut rien dans la vie courante, où on
-ne peut atteindre son but que grâce à l’effort soutenu de nombreuses volontés travaillant dans le
-même sens."
+
+> "Élevé dans une famille possédant des serfs, j’entrai dans la vie active, comme tous les jeunes
+> gens de mon époque, avec une confiance aveugle dans la nécessité de commander, d’ordonner, de
+> brimer, de punir et ainsi de suite. Mais quand, assez tôt, je dus diriger d’importantes affaires et
+> côtoyer des hommes libres, et quand chaque erreur pouvait être immédiatement lourde de
+> conséquences, je commençai à apprécier la différence entre agir selon les principes du
+> commandement et de la discipline et agir selon le principe de la bonne intelligence. Le premier
+> fonctionne admirablement dans un défilé militaire, mais ne vaut rien dans la vie courante, où on
+> ne peut atteindre son but que grâce à l’effort soutenu de nombreuses volontés travaillant dans le
+> même sens."
+
 "L’effort soutenu de nombreuses volontés travaillant dans le même sens", c’est exactement ce
 qu’un projet comme Linux demande — et le "principe de commandement" est en effet
 impossible à appliquer aux volontaires de ce paradis de l’anarchie que nous appelons Internet.
@@ -818,6 +909,7 @@ marché libre ou un écosystème, un ensemble d’agents égoïstes qui tentent 
 utilité, ce qui au passage produit un ordre spontané, auto−correcteur, plus élaboré et plus efficace
 que toute planification centralisée n’aurait pu l’être. C’est ici qu’il faut chercher le "principe de
 bonne intelligence".
+
 La "fonction d’utilité" que les bidouilleurs Linux maximisent n’est pas classiquement
 économique, c’est l’intangible de leur propre satisfaction personnelle et leur réputation au sein
 des autres bidouilleurs. (On peut être tenté de penser que leur motivation est "altruiste", mais
@@ -826,17 +918,20 @@ cultures volontaires qui fonctionnent ainsi ne sont pas si rares; j’ai déjà 
 semblables dans les fanzines de science−fiction, qui au contraire du monde de la bidouille,
 reconnaissent explicitement que l’"egoboo" (le fait que sa réputation s’accroisse auprès des
 autres fans) est le principal moteur qui propulse les activités volontaires.
+
 Linus, en se positionnant avec succès comme gardien des clés d’un projet où le développement est
 surtout fait par les autres, et en y injectant de l’intérêt jusqu’à ce qu’il devienne auto−suffisant a
 montré une intelligence profonde du "principe de bonne intelligence" de Kropotkine. Cette
 vision quasi−économique du monde de Linux nous permet de comprendre comment cette bonne
 intelligence est mise en oeuvre.
+
 On peut analyser la méthode de Linus comme un moyen de créer de manière efficace, un marché
 de l’"egoboo" — relier les égoïsmes individuels des bidouilleurs aussi fermement que possible,
 dans le but de réaliser des tâches impossibles sans une coopération soutenue. Avec le projet
 fetchmail, j’ai montré (à une échelle plus modeste, je vous l’accorde) qu’on peut dupliquer ses
 méthodes avec de bons résultats. Peut−être même l’ai−je fait un peu plus consciemment et plus
 systématiquement que lui.
+
 Nombreux sont ceux (en particulier ceux dont les opinions politiques les font se méfier des
 marchés libres) qui s’attendraient à ce que la culture d’égoïstes sans autre maître qu’eux mêmes
 soit fragmentée, territoriale, source de gâchis, pleine de petits secrets, et hostile. Mais cette idée
@@ -851,9 +946,11 @@ de beaucoup d’autres bidouilleurs, un coordinateur−développeur fort peut ut
 pour tirer parti du fait d’avoir énormément de co−développeurs sans que le projet ne s’effondre
 en un capharnaüm chaotique. C’est pourquoi je propose la contrepartie suivante à la loi de
 Brooks:
-19: Pour peu que le coordinateur du développement dispose d’un moyen de communication au
+
+**19: Pour peu que le coordinateur du développement dispose d’un moyen de communication au
 moins aussi bon que l’Internet, et pour peu qu’il sache comment mener ses troupes sans coercition,
-il est inévitable qu’il y ait plus de choses dans plusieurs têtes que dans une seule.
+de nombreuses têtes sont inévitablement meilleures qu'une seule.**
+
 Je pense qu’à l’avenir, le logiciel dont le code source est ouvert sera de plus en plus entre les
 mains de gens qui savent jouer au jeu de Linus, des gens qui abandonnent les cathédrales pour se
 consacrer entièrement au bazar. Cela ne veut pas dire que les coups de génie individuels ne
